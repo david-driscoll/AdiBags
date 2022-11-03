@@ -22,21 +22,16 @@ along with AdiBags.  If not, see <http://www.gnu.org/licenses/>.
 local addonName, addon = ...
 local L = addon.L
 
--- Don't load this file at all unless AdiBags is in retail.
-if not addon.isRetail then
-	return
-end
-
 --<GLOBALS
 local _G = _G
 local BreakUpLargeNumbers = _G.BreakUpLargeNumbers
 local CreateFont = _G.CreateFont
 local CreateFrame = _G.CreateFrame
-local ExpandCurrencyList = _G.C_CurrencyInfo.ExpandCurrencyList
+local ExpandCurrencyList = _G.C_CurrencyInfo.ExpandCurrencyList or _G.ExpandCurrencyList
 local format = _G.format
 local GetCurrencyListInfo = _G.C_CurrencyInfo.GetCurrencyListInfo
 local GetCurrencyInfo = _G.C_CurrencyInfo.GetCurrencyInfo
-local GetCurrencyListSize = _G.C_CurrencyInfo.GetCurrencyListSize
+local GetCurrencyListSize = _G.C_CurrencyInfo.GetCurrencyListSize or _G.GetCurrencyListSize
 local hooksecurefunc = _G.hooksecurefunc
 local ipairs = _G.ipairs
 local IsAddOnLoaded = _G.IsAddOnLoaded
@@ -45,6 +40,29 @@ local tinsert = _G.tinsert
 local unpack = _G.unpack
 local wipe = _G.wipe
 --GLOBALS>
+
+if not GetCurrencyListInfo then
+	GetCurrencyListInfo = function(index)
+		local name, isHeader, isExpanded, isUnused, isWatched, count, icon, maximum, hasWeeklyLimit, currentWeeklyAmount, unknown, itemID = _G
+			.GetCurrencyListInfo(index)
+		return { name = name,
+			isHeader = isHeader,
+			isHeaderExpanded = isExpanded,
+			isTypeUnused = isUnused,
+			isShowInBackpack = isWatched,
+			quantity = count,
+			trackedQuantity = count,
+			iconFileID = icon,
+			maxQuantity = maximum,
+			canEarnPerWeek = hasWeeklyLimit,
+			quantityEarnedThisWeek = currentWeeklyAmount,
+			isTradeable = false,
+			quality = 4,
+			discovered = not unknown,
+			itemID = itemID,
+		}
+	end
+end
 
 local UpdateTable = addon.UpdateTable
 
